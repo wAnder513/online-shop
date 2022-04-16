@@ -1,6 +1,5 @@
 <template>
   <div id="app" class="shop_wrapper">
-    <nav></nav>
     <keep-alive>
       <router-view />
     </keep-alive>
@@ -13,22 +12,22 @@ export default {
 }
 </script>
 
-<style scoped language="scss">
-* {
+<style lang="scss">
+html {
+  height: 100%;
+  font-size: 18px;
   box-sizing: border-box;
   font-weight: normal;
   margin: 0;
   padding: 0;
 }
 
-html {
-  height: 100%;
-  font-size: 14px;
+button {
+  cursor: pointer;
 }
 
 .shop_wrapper {
-  width: 900px;
-  background-color: aquamarine;
+  width: 1200px;
   height: 100%;
   margin: 0 auto;
   display: flex;

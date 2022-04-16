@@ -1,32 +1,32 @@
 <template>
   <div>
-    <div class="basket-store">
+    <div class="cart-store">
       <router-link :to="{ name: 'catalog' }">
-        <button>Back to catalog</button>
+        <button class="cart-store_catalog">Back to catalog</button>
       </router-link>
     </div>
 
-    <div v-if="hasItemsCart" class="basket-store_cards">
-      <div class="basket-store_card" v-for="item in itemsInCart" :key="item.id">
-        <img class="basket-store_picture" :src="item.name" />
-        <div class="basket-store_content">
-          <div class="basket-store_title">
+    <div v-if="hasItemsCart" class="cart-store_cards">
+      <div class="cart-store_card" v-for="item in itemsInCart" :key="item.id">
+        <img class="cart-store_picture" :src="item.picture" />
+        <div class="cart-store_content">
+          <div class="cart-store_title">
             {{ item.name }}
           </div>
 
-          <div class="basket-store_description">
+          <div class="cart-store_description">
             {{ item.description }}
           </div>
 
-          <div class="basket-store_metrics">
+          <div class="cart-store_metrics">
             <div>Number of things: {{ item.quantity }}</div>
             <div>Price: {{ item.price }} rub.</div>
           </div>
         </div>
 
-        <catalog-store-basket-modal
+        <catalog-store-cart-modal
           v-if="isModalSubmit"
-          class="basket-store_modal modal-content"
+          class="cart-store_modal modal-content"
           :modal-title="modalTitle"
           :right-btn-title="rightBtnTitle"
           @close-modal="closeModalSubmit"
@@ -43,28 +43,36 @@
             </div>
           </div>
 
-          <div class="modal-content_total">Total price: {{ totalPrice }}</div>
-        </catalog-store-basket-modal>
+          <div class="modal-content_total">
+            Total price: {{ totalPrice }} rub.
+          </div>
+        </catalog-store-cart-modal>
       </div>
     </div>
-    <div class="basket-store_purchase">
+
+    <div class="cart-store_stopper" v-else>
+      There are no goods in the cart yet
+    </div>
+
+    <div class="cart-store_purchase">
       <button
-        class="basket-store_button"
+        class="cart-store_button"
         :disabled="!hasItemsCart"
         @click="showModalSubmit"
       >
         Buy
+        <span v-if="totalPrice > 0">{{ totalPrice }}</span>
       </button>
     </div>
   </div>
 </template>
 
 <script>
-import CatalogStoreBasketModal from './CatalogStoreBasketModal.vue'
+import CatalogStoreCartModal from './CatalogStoreCartModal.vue'
 
 export default {
-  components: { CatalogStoreBasketModal },
-  name: 'CatalogStoreBasket',
+  components: { CatalogStoreCartModal },
+  name: 'CatalogStoreCart',
   props: {
     itemsInCart: Array
   },
@@ -75,13 +83,10 @@ export default {
   },
   computed: {
     modalTitle () {
-      return 'Confirmation of purchase'
+      return 'Order confirmation'
     },
     rightBtnTitle () {
       return 'Buy'
-    },
-    hasItemsInCart () {
-      return this.itemsInCart && this.itemsInCart.length > 0
     },
     hasItemsCart () {
       return this.itemsInCart && this.itemsInCart.length > 0
@@ -89,10 +94,12 @@ export default {
     totalPrice () {
       let totalPrice = 0
 
-      this.itemsInCart.forEach(item => {
-        let finalyRuslult = item.quantity * item.price
-        totalPrice += finalyRuslult
-      })
+      if (this.hasItemsCart) {
+        this.itemsInCart.forEach(item => {
+          let finalyRuslult = item.quantity * item.price
+          totalPrice += finalyRuslult
+        })
+      }
 
       return totalPrice
     }
@@ -108,96 +115,110 @@ export default {
 }
 </script>
 
-<style scoped>
-.basket-store {
-  margin-left: auto;
+<style lang="scss" scoped>
+.cart-store {
+  display: flex;
+  justify-content: flex-end;
   padding: 20px 20px 0 0;
   margin-bottom: 100px;
 }
 
-.basket-store_modal {
+.cart-store_catalog {
+  padding: 10px;
+}
+
+.cart-store_modal {
   font-size: 24px;
 }
 
-.basket-store_cards {
+.cart-store_cards {
   margin-bottom: 10px;
   border: 1px solid black;
 }
 
-.basket-store_title {
-  font-size: 28px;
+.cart-store_card {
+  display: flex;
+  margin-bottom: 15px;
+  padding: 10px 15px 15px;
+}
+
+.cart-store_title {
   margin-bottom: 15px;
 }
 
-.basket-store_description {
+.cart-store_description {
   display: flex;
   justify-content: space-between;
   flex: 1 1 auto;
-  margin-bottom: 10px;
 }
 
-.basket-store_purchase {
+.cart-store_purchase {
   display: flex;
   justify-content: center;
 }
 
-.basket-store_picture {
+.cart-store_picture {
+  width: 280px;
+  height: 180px;
+  margin-right: 15px;
   flex-shrink: 0;
-  width: 150px;
-  height: 200px;
-  margin-bottom: -15px;
 }
 
-.basket-store_card {
+.cart-store_metrics {
   display: flex;
-  margin-bottom: 15px;
-}
-
-.basket-store_metrics {
-  display: flex;
-  font-size: 28px;
   justify-content: space-between;
 }
 
-.basket-store_content {
+.cart-store_content {
+  font-size: 20px;
   width: 100%;
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 10px 10px 15px;
-  font-size: 20px;
   text-align: center;
 }
 
-.basket-store_button:disabled {
-  background-color: rgb(76, 76, 76);
-}
-
-.basket-store_button:hover:disabled {
-  cursor: auto;
-  background-color: rgb(62, 62, 62);
-}
-
-.basket-store_button {
+.cart-store_button {
   width: 150px;
   font-size: 20px;
   padding: 10px;
   color: #ffffff;
   background-color: rgb(7, 234, 7);
-  cursor: pointer;
-}
 
-.basket-store_button:hover {
-  background-color: rgb(7, 169, 7);
+  &:hover {
+    background-color: rgb(7, 169, 7);
+
+    &:disabled {
+      cursor: auto;
+      background-color: rgb(62, 62, 62);
+    }
+  }
+
+  &:disabled {
+    background-color: rgb(76, 76, 76);
+  }
 }
 
 .modal-content_container {
   display: flex;
 }
 
+.cart-store_stopper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
 .modal-content_title,
+.modal-content_total,
 .modal-content_quantity,
-.modal-content_total {
+.cart-store_description {
   margin-bottom: 10px;
+}
+
+.cart-store_title,
+.cart-store_metrics,
+.cart-store_stopper {
+  font-size: 28px;
 }
 </style>

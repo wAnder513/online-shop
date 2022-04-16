@@ -1,12 +1,10 @@
 <template>
-  <div>
+  <div class="shop">
     <div class="shop_basket">
-      <router-link
-        :to="{ name: 'basket', params: { itemsInCart: itemsInCart } }"
-      >
-        <button class="shop_basket-button">
-          <span class="shop_basket-cart">Cart</span>
-          <span v-if="numberInCart" class="shop_basket-counter">
+      <router-link :to="{ name: 'cart', params: { itemsInCart: itemsInCart } }">
+        <button class="shop_button">
+          <span class="shop_cart">Cart</span>
+          <span v-if="numberInCart">
             {{ numberInCart }}
           </span>
         </button>
@@ -24,96 +22,49 @@
       >
         <img class="shop_picture" :src="card.picture" />
 
-        <div class="shop_name">
-          {{ card.name }}
-        </div>
+        <div class="shop_container">
+          <div class="shop_name">
+            {{ card.name }}
+          </div>
 
-        <div class="shop_description">
-          {{ card.description }}
-        </div>
+          <div class="shop_description">
+            {{ card.description }}
+          </div>
 
-        <div class="shop_metrics">
-          <div>Quantity in cart: {{ card.quantity }}</div>
-          <div>Price: {{ card.price }} rub.</div>
-        </div>
+          <div class="shop_metrics">
+            <div>Quantity in cart: {{ card.quantity }}</div>
+            <div>Price: {{ card.price }} rub.</div>
+          </div>
 
-        <div class="shop_buttons shop_btn">
-          <button class="shop_btn-add" @click="addToCart(card)">
-            Add to cart
-          </button>
+          <div class="shop_buttons shop_btn">
+            <button class="shop_btn-add" @click="addToCart(card)">
+              Add to cart
+            </button>
 
-          <button class="shop_btn-delete" @click="removeFromCart(card)">
-            Delete to cart
-          </button>
+            <button class="shop_btn-delete" @click="removeFromCart(card)">
+              Delete to cart
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div v-else>
+      Catalog is empty
     </div>
   </div>
 </template>
 
 <script>
+import { products } from '../data'
+
 export default {
   components: {},
   name: 'CatalogStore',
   data () {
     return {
       itemsInCart: [],
-      products: [
-        {
-          id: 1,
-          name: 'Product 1',
-          picture:
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fironbymironova.com%2Fcatalog%2Fverkhnyaya_odezhda%2F&psig=AOvVaw1pcCjnvVPMQ5yiWdDujjio&ust=1649861713053000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCPC8iYDkjvcCFQAAAAAdAAAAABAQ',
-          description: 'This is an incredibly awesome product',
-          price: 2350,
-          quantity: 0
-        },
-        {
-          id: 2,
-          name: 'Product 2',
-          picture:
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fironbymironova.com%2Fcatalog%2Fverkhnyaya_odezhda%2F&psig=AOvVaw1pcCjnvVPMQ5yiWdDujjio&ust=1649861713053000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCPC8iYDkjvcCFQAAAAAdAAAAABAQ',
-          description: 'This is an incredibly awesome product',
-          price: 2300,
-          quantity: 0
-        },
-        {
-          id: 3,
-          name: 'Product 3',
-          picture:
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fironbymironova.com%2Fcatalog%2Fverkhnyaya_odezhda%2F&psig=AOvVaw1pcCjnvVPMQ5yiWdDujjio&ust=1649861713053000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCPC8iYDkjvcCFQAAAAAdAAAAABAQ',
-          description: 'This is an incredibly awesome product',
-          price: 1000,
-          quantity: 0
-        },
-        {
-          id: 4,
-          name: 'Product 4',
-          picture:
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fironbymironova.com%2Fcatalog%2Fverkhnyaya_odezhda%2F&psig=AOvVaw1pcCjnvVPMQ5yiWdDujjio&ust=1649861713053000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCPC8iYDkjvcCFQAAAAAdAAAAABAQ',
-          description: 'This is an incredibly awesome product',
-          price: 250,
-          quantity: 0
-        },
-        {
-          id: 5,
-          name: 'Product 5',
-          picture:
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fironbymironova.com%2Fcatalog%2Fverkhnyaya_odezhda%2F&psig=AOvVaw1pcCjnvVPMQ5yiWdDujjio&ust=1649861713053000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCPC8iYDkjvcCFQAAAAAdAAAAABAQ',
-          description: 'This is an incredibly awesome product',
-          price: 5500,
-          quantity: 0
-        },
-        {
-          id: 6,
-          name: 'Product 6',
-          picture:
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fironbymironova.com%2Fcatalog%2Fverkhnyaya_odezhda%2F&psig=AOvVaw1pcCjnvVPMQ5yiWdDujjio&ust=1649861713053000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCPC8iYDkjvcCFQAAAAAdAAAAABAQ',
-          description: 'This is an incredibly awesome product',
-          price: 3800,
-          quantity: 0
-        }
-      ]
+      products: products
     }
   },
   computed: {
@@ -153,7 +104,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .shop_basket {
   display: flex;
   align-items: center;
@@ -162,7 +113,7 @@ export default {
   justify-content: flex-end;
 }
 
-.shop_basket-button {
+.shop_button {
   padding: 10px;
   margin-right: 10px;
   font-size: 20px;
@@ -173,31 +124,32 @@ export default {
   justify-content: center;
 }
 
+.shop_container {
+  padding: 10px 10px 15px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .shop_cards {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  min-height: 100%;
 }
 
 .shop_card {
   display: flex;
   flex-direction: column;
-  width: 250px;
-  height: 300px;
+  width: 280px;
+  height: 360px;
   background-color: aliceblue;
-  margin: 20px 10px 0 0;
-  padding: 10px;
+  margin: 0 10px 20px;
 }
 
-/* .shop_card:not(nth-child(3)) {
-} */
-
 .shop_picture {
-  width: calc(100% + 10px);
-  height: 150px;
+  width: 100%;
+  height: 180px;
   flex-shrink: 0;
-  margin: -10px -10px 0;
+  margin-bottom: 10px;
 }
 
 .shop_metrics {
@@ -221,23 +173,24 @@ export default {
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
 }
 
 .shop_btn-add {
   background-color: green;
-}
 
-.shop_btn-add:hover {
-  background-color: rgb(2, 88, 2);
+  &:hover,
+  &:focus {
+    background-color: rgb(2, 88, 2);
+  }
 }
 
 .shop_btn-delete {
   background-color: darkRed;
-}
 
-.shop_btn-delete:hover {
-  background-color: rgb(107, 1, 1);
+  &:hover,
+  &:focus {
+    background-color: rgb(107, 1, 1);
+  }
 }
 
 .active-good {
@@ -245,7 +198,7 @@ export default {
   outline-offset: -3px;
 }
 
-.shop_basket-cart {
+.shop_cart {
   margin-right: 5px;
 }
 </style>

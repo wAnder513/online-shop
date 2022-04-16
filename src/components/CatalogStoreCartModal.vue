@@ -7,9 +7,9 @@
           close
         </div>
       </div>
-      <div class="modal_content">
-        <slot></slot>
-      </div>
+
+      <slot></slot>
+
       <div class="modal_footer">
         <button class="modal_close" @click="closeModal">Close</button>
         <button class="modal_submit">
@@ -22,7 +22,7 @@
 
 <script>
 export default {
-  name: 'CatalogStoreBasketModal',
+  name: 'CatalogStoreCartModal',
   props: {
     modalTitle: {
       type: String,
@@ -55,7 +55,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .modal_wrapper {
   background: rgba(64, 64, 64, 0.4);
   display: flex;
@@ -72,10 +72,6 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
-}
-
-.modal-close {
-  cursor: pointer;
 }
 
 .modal_header {
@@ -100,17 +96,25 @@ export default {
 .modal_submit,
 .modal_close {
   width: 40%;
-  cursor: pointer;
+  padding: 10px;
+  color: #ffffff;
 }
 
 .modal_submit {
-  padding: 10px;
-  color: #ffffff;
   background: #26ae68;
+
+  &:hover,
+  &:focus {
+    background: #1f9357;
+  }
 }
+
 .modal_close {
-  padding: 10px;
-  color: #ffffff;
   background: red;
+
+  &:hover,
+  &:focus {
+    background: rgb(109, 1, 1);
+  }
 }
 </style>
