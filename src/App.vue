@@ -27,7 +27,7 @@ button {
 }
 
 .shop_wrapper {
-  width: 1200px;
+  max-width: 1200px;
   height: 100%;
   margin: 0 auto;
   display: flex;

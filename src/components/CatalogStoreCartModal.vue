@@ -61,7 +61,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
+  position: fixed;
   right: 0;
   left: 0;
   top: 0;
@@ -93,11 +93,16 @@ export default {
   justify-content: space-between;
 }
 
+.modal-close {
+  cursor: pointer;
+}
+
 .modal_submit,
 .modal_close {
   width: 40%;
   padding: 10px;
   color: #ffffff;
+  border: none;
 }
 
 .modal_submit {

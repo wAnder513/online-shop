@@ -7,50 +7,38 @@
     </div>
 
     <div v-if="hasItemsCart" class="cart-store_cards">
-      <div class="cart-store_card" v-for="item in itemsInCart" :key="item.id">
-        <img class="cart-store_picture" :src="item.picture" />
-        <div class="cart-store_content">
-          <div class="cart-store_title">
-            {{ item.name }}
-          </div>
+      <catalog-store-cart-items
+        class="cart-store_card"
+        v-for="product in itemsInCart"
+        :key="product.id"
+        :product="product"
+      >
+      </catalog-store-cart-items>
 
-          <div class="cart-store_description">
-            {{ item.description }}
-          </div>
+      <catalog-store-cart-modal
+        v-if="isModalSubmit"
+        class="cart-store_modal modal-content"
+        :modal-title="modalTitle"
+        :right-btn-title="rightBtnTitle"
+        @close-modal="closeModalSubmit"
+      >
+        <div
+          class="modal-content_container"
+          v-for="(product, index) in itemsInCart"
+          :key="`${product.id}-${index}`"
+        >
+          <div class="modal-content_title">{{ product.name }}:&nbsp;</div>
 
-          <div class="cart-store_metrics">
-            <div>Number of things: {{ item.quantity }}</div>
-            <div>Price: {{ item.price }} rub.</div>
-          </div>
+          <div class="modal-content_quantity">{{ product.quantity }} pc.</div>
         </div>
 
-        <catalog-store-cart-modal
-          v-if="isModalSubmit"
-          class="cart-store_modal modal-content"
-          :modal-title="modalTitle"
-          :right-btn-title="rightBtnTitle"
-          @close-modal="closeModalSubmit"
-        >
-          <div
-            class="modal-content_container"
-            v-for="(itemCart, index) in itemsInCart"
-            :key="`${itemCart.id}-${index}`"
-          >
-            <div class="modal-content_title">{{ itemCart.name }}:&nbsp;</div>
-
-            <div class="modal-content_quantity">
-              {{ itemCart.quantity }} pc.
-            </div>
-          </div>
-
-          <div class="modal-content_total">
-            Total price: {{ totalPrice }} rub.
-          </div>
-        </catalog-store-cart-modal>
-      </div>
+        <div class="modal-content_total">
+          Total price: {{ totalPrice }} rub.
+        </div>
+      </catalog-store-cart-modal>
     </div>
 
-    <div class="cart-store_stopper" v-else>
+    <div v-else class="cart-store_stopper">
       There are no goods in the cart yet
     </div>
 
@@ -68,10 +56,11 @@
 </template>
 
 <script>
+import CatalogStoreCartItems from './CatalogStoreCartItems.vue'
 import CatalogStoreCartModal from './CatalogStoreCartModal.vue'
 
 export default {
-  components: { CatalogStoreCartModal },
+  components: { CatalogStoreCartItems, CatalogStoreCartModal },
   name: 'CatalogStoreCart',
   props: {
     itemsInCart: Array
@@ -127,10 +116,6 @@ export default {
   padding: 10px;
 }
 
-.cart-store_modal {
-  font-size: 24px;
-}
-
 .cart-store_cards {
   margin-bottom: 10px;
   border: 1px solid black;
@@ -142,40 +127,9 @@ export default {
   padding: 10px 15px 15px;
 }
 
-.cart-store_title {
-  margin-bottom: 15px;
-}
-
-.cart-store_description {
-  display: flex;
-  justify-content: space-between;
-  flex: 1 1 auto;
-}
-
 .cart-store_purchase {
   display: flex;
   justify-content: center;
-}
-
-.cart-store_picture {
-  width: 280px;
-  height: 180px;
-  margin-right: 15px;
-  flex-shrink: 0;
-}
-
-.cart-store_metrics {
-  display: flex;
-  justify-content: space-between;
-}
-
-.cart-store_content {
-  font-size: 20px;
-  width: 100%;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
 }
 
 .cart-store_button {
@@ -184,6 +138,7 @@ export default {
   padding: 10px;
   color: #ffffff;
   background-color: rgb(7, 234, 7);
+  border: none;
 
   &:hover {
     background-color: rgb(7, 169, 7);
@@ -211,13 +166,10 @@ export default {
 
 .modal-content_title,
 .modal-content_total,
-.modal-content_quantity,
-.cart-store_description {
+.modal-content_quantity {
   margin-bottom: 10px;
 }
 
-.cart-store_title,
-.cart-store_metrics,
 .cart-store_stopper {
   font-size: 28px;
 }

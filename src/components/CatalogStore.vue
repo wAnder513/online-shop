@@ -13,59 +13,44 @@
 
     <h1 class="shop_title">Catalog</h1>
 
+    <h2 v-if="isFetching && !hasErrors">Catalog is loading</h2>
+
     <div v-if="hasProducts" class="shop_cards">
-      <div
+      <catalog-store-items
         class="shop_card"
-        :class="isActiveGood(card)"
-        v-for="card in products"
-        :key="card.id"
+        :class="isActiveGood(product)"
+        v-for="product in products"
+        :key="product.id"
+        :product="product"
+        @add-to-cart="addToCart(product)"
+        @remove-from-cart="removeFromCart(product)"
       >
-        <img class="shop_picture" :src="card.picture" />
-
-        <div class="shop_container">
-          <div class="shop_name">
-            {{ card.name }}
-          </div>
-
-          <div class="shop_description">
-            {{ card.description }}
-          </div>
-
-          <div class="shop_metrics">
-            <div>Quantity in cart: {{ card.quantity }}</div>
-            <div>Price: {{ card.price }} rub.</div>
-          </div>
-
-          <div class="shop_buttons shop_btn">
-            <button class="shop_btn-add" @click="addToCart(card)">
-              Add to cart
-            </button>
-
-            <button class="shop_btn-delete" @click="removeFromCart(card)">
-              Delete to cart
-            </button>
-          </div>
-        </div>
-      </div>
+      </catalog-store-items>
     </div>
 
-    <div v-else>
-      Catalog is empty
-    </div>
+    <h2 v-else-if="!isFetching && hasErrors">
+      Catalog is empty, try to reload page
+    </h2>
   </div>
 </template>
 
 <script>
-import { products } from '../data'
+import CatalogStoreItems from './CatalogStoreItems.vue'
+import axios from 'axios'
 
 export default {
-  components: {},
+  components: { CatalogStoreItems },
   name: 'CatalogStore',
   data () {
     return {
       itemsInCart: [],
-      products: products
+      products: [],
+      isFetching: false,
+      hasErrors: false
     }
+  },
+  created () {
+    this.getCatalog()
   },
   computed: {
     hasProducts () {
@@ -80,21 +65,34 @@ export default {
     }
   },
   methods: {
-    addToCart (card) {
-      if (card.quantity === 0) {
-        this.itemsInCart.push(card)
+    getCatalog () {
+      this.isFetching = true
+
+      axios
+        .get('http://localhost:3000/products')
+        .catch(() => {
+          this.hasErrors = true
+        })
+        .then(products => {
+          this.products = products.data
+          this.isFetching = false
+        })
+    },
+    addToCart (product) {
+      if (product.quantity === 0) {
+        this.itemsInCart.push(product)
       }
-      if (card.quantity < 99) {
-        card.quantity += 1
+      if (product.quantity < 99) {
+        product.quantity += 1
       }
     },
-    removeFromCart (cart) {
-      if (cart.quantity > 0) {
-        if (cart.quantity === 1) {
+    removeFromCart (product) {
+      if (product.quantity > 0) {
+        if (product.quantity === 1) {
           let items = [...this.itemsInCart]
-          this.itemsInCart = items.filter(item => cart.id !== item.id)
+          this.itemsInCart = items.filter(item => product.id !== item.id)
         }
-        cart.quantity -= 1
+        product.quantity -= 1
       }
     },
     isActiveGood (card) {
@@ -124,13 +122,6 @@ export default {
   justify-content: center;
 }
 
-.shop_container {
-  padding: 10px 10px 15px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
 .shop_cards {
   display: flex;
   flex-wrap: wrap;
@@ -143,54 +134,6 @@ export default {
   height: 360px;
   background-color: aliceblue;
   margin: 0 10px 20px;
-}
-
-.shop_picture {
-  width: 100%;
-  height: 180px;
-  flex-shrink: 0;
-  margin-bottom: 10px;
-}
-
-.shop_metrics {
-  display: flex;
-  justify-content: space-between;
-  flex: 1 1 auto;
-}
-
-.shop_name,
-.shop_description {
-  margin-bottom: 10px;
-}
-
-.shop_buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.shop_btn-add,
-.shop_btn-delete {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-}
-
-.shop_btn-add {
-  background-color: green;
-
-  &:hover,
-  &:focus {
-    background-color: rgb(2, 88, 2);
-  }
-}
-
-.shop_btn-delete {
-  background-color: darkRed;
-
-  &:hover,
-  &:focus {
-    background-color: rgb(107, 1, 1);
-  }
 }
 
 .active-good {
