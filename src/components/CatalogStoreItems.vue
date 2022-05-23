@@ -20,11 +20,11 @@
       </div>
 
       <div class="shop_buttons shop_btn">
-        <button class="shop_btn-add" @click="addToCart">
+        <button class="shop_btn-add" @click="addToCartStore">
           Add to cart
         </button>
 
-        <button class="shop_btn-delete" @click="removeFromCart">
+        <button class="shop_btn-delete" @click="removeToCartStore">
           Delete to cart
         </button>
       </div>
@@ -33,18 +33,23 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
+
 export default {
   props: {
     product: Object
-  },
-  computed: {},
+  },  
   methods: {
-    addToCart () {
-      return this.$emit('add-to-cart')
+    ...mapActions ([
+      'addToCart',
+      'deleteToCart'
+    ]),
+    addToCartStore () {
+      this.addToCart(this.product)
     },
-    removeFromCart () {
-      return this.$emit('remove-from-cart')
-    }
+    removeToCartStore () {
+      this.deleteToCart(this.product)
+    },
   }
 }
 </script>

@@ -7,8 +7,16 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    this.loadReactions()
+  },
+  methods: {
+    ...mapActions(['loadReactions']),
+  }
 }
 </script>
 

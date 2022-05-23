@@ -6,40 +6,42 @@
       </router-link>
     </div>
 
-    <div v-if="hasItemsCart" class="cart-store_cards">
-      <catalog-store-cart-items
-        class="cart-store_card"
-        v-for="product in itemsInCart"
-        :key="product.id"
-        :product="product"
-      >
-      </catalog-store-cart-items>
-
-      <catalog-store-cart-modal
-        v-if="isModalSubmit"
-        class="cart-store_modal modal-content"
-        :modal-title="modalTitle"
-        :right-btn-title="rightBtnTitle"
-        @close-modal="closeModalSubmit"
-      >
-        <div
-          class="modal-content_container"
-          v-for="(product, index) in itemsInCart"
-          :key="`${product.id}-${index}`"
+    <div class="cart-store_content">
+      <div v-if="hasItemsCart" class="cart-store_cards">
+        <catalog-store-cart-items
+          class="cart-store_card"
+          v-for="product in getProductsInCart"
+          :key="product.id"
+          :product="product"
         >
-          <div class="modal-content_title">{{ product.name }}:&nbsp;</div>
+        </catalog-store-cart-items>
 
-          <div class="modal-content_quantity">{{ product.quantity }} pc.</div>
-        </div>
+        <catalog-store-cart-modal
+          v-if="isModalSubmit"
+          class="cart-store_modal modal-content"
+          :modal-title="modalTitle"
+          :right-btn-title="rightBtnTitle"
+          @close-modal="closeModalSubmit"
+        >
+          <div
+            class="modal-content_container"
+            v-for="(product, index) in getProductsInCart"
+            :key="`${product.id}-${index}`"
+          >
+            <div class="modal-content_title">{{ product.name }}:&nbsp;</div>
 
-        <div class="modal-content_total">
-          Total price: {{ totalPrice }} rub.
-        </div>
-      </catalog-store-cart-modal>
-    </div>
+            <div class="modal-content_quantity">{{ product.quantity }} pc.</div>
+          </div>
 
-    <div v-else class="cart-store_stopper">
-      There are no goods in the cart yet
+          <div class="modal-content_total">
+            Total price: {{ totalPrice }} rub.
+          </div>
+        </catalog-store-cart-modal>
+      </div>
+
+      <div v-else class="cart-store_stopper">
+        There are no goods in the cart yet
+      </div>
     </div>
 
     <div class="cart-store_purchase">
@@ -56,21 +58,22 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import CatalogStoreCartItems from './CatalogStoreCartItems.vue'
 import CatalogStoreCartModal from './CatalogStoreCartModal.vue'
 
 export default {
   components: { CatalogStoreCartItems, CatalogStoreCartModal },
   name: 'CatalogStoreCart',
-  props: {
-    itemsInCart: Array
-  },
   data () {
     return {
       isModalSubmit: false
     }
   },
   computed: {
+    ...mapGetters([
+      'getProductsInCart'
+    ]),
     modalTitle () {
       return 'Order confirmation'
     },
@@ -78,13 +81,13 @@ export default {
       return 'Buy'
     },
     hasItemsCart () {
-      return this.itemsInCart && this.itemsInCart.length > 0
+      return this.getProductsInCart && this.getProductsInCart.length > 0
     },
     totalPrice () {
       let totalPrice = 0
 
       if (this.hasItemsCart) {
-        this.itemsInCart.forEach(item => {
+        this.getProductsInCart.forEach(item => {
           let finalyRuslult = item.quantity * item.price
           totalPrice += finalyRuslult
         })
@@ -107,16 +110,25 @@ export default {
 <style lang="scss" scoped>
 .cart-store {
   display: flex;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
   justify-content: flex-end;
-  padding: 20px 20px 0 0;
-  margin-bottom: 100px;
+  padding: 20px 20px 20px 0;
+  z-index: 999;
+  margin-bottom: 40px;
+  background-color: #ccf1f1;
 }
 
 .cart-store_catalog {
   padding: 10px;
+  margin-right: 10px;
 }
 
 .cart-store_cards {
+margin: 100px 0 40px;
+
   margin-bottom: 10px;
   border: 1px solid black;
 }
@@ -144,7 +156,7 @@ export default {
     background-color: rgb(7, 169, 7);
 
     &:disabled {
-      cursor: auto;
+      cursor: not-allowed;
       background-color: rgb(62, 62, 62);
     }
   }
@@ -161,7 +173,6 @@ export default {
 .cart-store_stopper {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
 }
 
 .modal-content_title,
@@ -172,5 +183,9 @@ export default {
 
 .cart-store_stopper {
   font-size: 28px;
+}
+
+.cart-store_content {
+  margin: 100px 0 40px;
 }
 </style>

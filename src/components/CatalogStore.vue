@@ -1,7 +1,7 @@
 <template>
   <div class="shop">
     <div class="shop_basket">
-      <router-link :to="{ name: 'cart', params: { itemsInCart: itemsInCart } }">
+      <router-link :to="{ name: 'cart'}">
         <button class="shop_button">
           <span class="shop_cart">Cart</span>
           <span v-if="numberInCart">
@@ -13,22 +13,20 @@
 
     <h1 class="shop_title">Catalog</h1>
 
-    <h2 v-if="isFetching && !hasErrors">Catalog is loading</h2>
+    <h2 v-if="getFetching">Catalog is loading</h2>
 
     <div v-if="hasProducts" class="shop_cards">
       <catalog-store-items
         class="shop_card"
         :class="isActiveGood(product)"
-        v-for="product in products"
+        v-for="product in getProducts"
         :key="product.id"
         :product="product"
-        @add-to-cart="addToCart(product)"
-        @remove-from-cart="removeFromCart(product)"
       >
       </catalog-store-items>
     </div>
 
-    <h2 v-else-if="!isFetching && hasErrors">
+    <h2 v-else-if="!hasProducts && getServerErrors">
       Catalog is empty, try to reload page
     </h2>
   </div>
@@ -36,65 +34,47 @@
 
 <script>
 import CatalogStoreItems from './CatalogStoreItems.vue'
-import axios from 'axios'
+import { mapGetters } from 'vuex'
 
 export default {
   components: { CatalogStoreItems },
   name: 'CatalogStore',
   data () {
     return {
-      itemsInCart: [],
-      products: [],
       isFetching: false,
-      hasErrors: false
     }
   },
-  created () {
-    this.getCatalog()
+  mounted() {
+    // window.addEventListener('scroll', function() {
+    //   let header = document.querySelector('.shop_basket')
+    //   let posTop = window.pageYOffset;
+
+    //   if (posTop !== 0) {
+    //     header.style.opacity = 0.5
+    //   } else {
+    //     header.style.opacity = 1
+    //   }
+    // });
   },
   computed: {
+    ...mapGetters([
+      'getProducts',
+      'getServerErrors',
+      'getFetching',
+      'getProductsInCart',
+    ]),
     hasProducts () {
-      return this.products && this.products.length > 0
+      return this.getProducts && this.getProducts.length > 0
     },
     numberInCart () {
-      let numberItemsInCart = 0
-      this.itemsInCart.forEach(item => {
-        numberItemsInCart += item.quantity
+      let productInCart = 0
+      this.getProductsInCart.forEach((product) => {
+        productInCart += product.quantity
       })
-      return numberItemsInCart
-    }
+      return productInCart
+    },
   },
   methods: {
-    getCatalog () {
-      this.isFetching = true
-
-      axios
-        .get('http://localhost:3000/products')
-        .catch(() => {
-          this.hasErrors = true
-        })
-        .then(products => {
-          this.products = products.data
-          this.isFetching = false
-        })
-    },
-    addToCart (product) {
-      if (product.quantity === 0) {
-        this.itemsInCart.push(product)
-      }
-      if (product.quantity < 99) {
-        product.quantity += 1
-      }
-    },
-    removeFromCart (product) {
-      if (product.quantity > 0) {
-        if (product.quantity === 1) {
-          let items = [...this.itemsInCart]
-          this.itemsInCart = items.filter(item => product.id !== item.id)
-        }
-        product.quantity -= 1
-      }
-    },
     isActiveGood (card) {
       return card.quantity > 0 ? 'active-good' : ''
     }
@@ -104,11 +84,16 @@ export default {
 
 <style lang="scss" scoped>
 .shop_basket {
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
-  padding: 20px 20px 0 0;
-  margin-bottom: 100px;
+  padding: 20px 20px 20px 0;
   justify-content: flex-end;
+  z-index: 999;
+  background-color: #ccf1f1;
+  width: 100%;
 }
 
 .shop_button {
@@ -120,6 +105,7 @@ export default {
 .shop_title {
   display: flex;
   justify-content: center;
+  margin: 100px 0 40px;
 }
 
 .shop_cards {
