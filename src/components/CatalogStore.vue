@@ -2,7 +2,7 @@
   <div class="shop">
     <div class="shop_basket">
       <router-link :to="{ name: 'cart'}">
-        <button class="shop_button">
+        <button class="shop_button" @click="changePage">
           <span class="shop_cart">Cart</span>
           <span v-if="numberInCart">
             {{ numberInCart }}
@@ -13,13 +13,18 @@
 
     <h1 class="shop_title">Catalog</h1>
 
+    <div class="shop_search">
+      <input class="shop_input" :value="getSearchCatalog" @keyup.enter="setSearchValue" @change="getSearchValue"/>
+      <button class="shop_loupe" @click="setSearchValue">search</button>
+    </div>
+
     <h2 v-if="getFetching">Catalog is loading</h2>
 
     <div v-if="hasProducts" class="shop_cards">
       <catalog-store-items
         class="shop_card"
-        :class="isActiveGood(product)"
-        v-for="product in getProducts"
+        :class="activeGood(product)"
+        v-for="product in getVisibleProducts"
         :key="product.id"
         :product="product"
       >
@@ -34,16 +39,11 @@
 
 <script>
 import CatalogStoreItems from './CatalogStoreItems.vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: { CatalogStoreItems },
   name: 'CatalogStore',
-  data () {
-    return {
-      isFetching: false,
-    }
-  },
   mounted() {
     // window.addEventListener('scroll', function() {
     //   let header = document.querySelector('.shop_basket')
@@ -62,9 +62,11 @@ export default {
       'getServerErrors',
       'getFetching',
       'getProductsInCart',
+      'getSearchCatalog',
+      'getVisibleProducts'
     ]),
     hasProducts () {
-      return this.getProducts && this.getProducts.length > 0
+      return this.getVisibleProducts && this.getVisibleProducts.length > 0
     },
     numberInCart () {
       let productInCart = 0
@@ -75,8 +77,29 @@ export default {
     },
   },
   methods: {
-    isActiveGood (card) {
+    ...mapActions(['setSearch', 
+    'addVisibaleProducts', 
+    'clearVisibalProducts',
+    'reloadPage'
+    ]),
+    activeGood (card) {
       return card.quantity > 0 ? 'active-good' : ''
+    },
+    setSearchValue () {
+      if (this.getSearchValue.length) {
+          this.clearVisibalProducts()
+          this.getProducts.forEach((product) => {
+            if (product.name.toLowerCase().includes(this.getSearchCatalog.toLowerCase())) {
+              this.addVisibaleProducts(product)
+          }
+        })
+      }
+    },
+    changePage() {
+      this.reloadPage()
+    },
+    getSearchValue(e) {
+      this.setSearch(e.target.value);
     }
   }
 }
@@ -91,7 +114,7 @@ export default {
   align-items: center;
   padding: 20px 20px 20px 0;
   justify-content: flex-end;
-  z-index: 999;
+  z-index: 10;
   background-color: #ccf1f1;
   width: 100%;
 }
@@ -111,6 +134,17 @@ export default {
 .shop_cards {
   display: flex;
   flex-wrap: wrap;
+}
+
+.shop_search {
+  display: flex;
+  justify-content: right;
+  margin-bottom: 40px;
+
+  .shop_input {
+    margin-right: 5px;
+    padding: 5px;
+  }
 }
 
 .shop_card {

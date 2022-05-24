@@ -8,8 +8,10 @@ export default new Vuex.Store({
   state: {
     products: [],
     productsInCart: [],
+    visibleProducts: [],
+    searchCatalog: '',
     hasServerErrors: false,
-    isFetching: false
+    isFetching: false,
   },
   getters: {
     getProducts(state) {
@@ -18,22 +20,32 @@ export default new Vuex.Store({
     getProductsInCart(state) {
       return state.productsInCart
     },
+    getSearchCatalog(state) {
+      return state.searchCatalog
+    },
     getServerErrors(state) {
       return state.hasServerErrors
     },
     getFetching(state) {
       return state.isFetching
+    },
+    getVisibleProducts(state) {
+      return state.visibleProducts
     }
   },
   mutations: {
     SET_REACTION(state, products) {
       state.products = products
+      state.visibleProducts = products
     },
     ADD_TO_CART(state, product) {
       if( product.quantity === 0) {
         state.productsInCart.push(product)
       }
       product.quantity += 1
+    },
+    ADD_VISIBALE_PRODUCTS(state, product) {
+      state.visibleProducts.push(product) 
     },
     DELETE_TO_CART(state, product) {
       if(product.quantity > 0) {
@@ -46,6 +58,16 @@ export default new Vuex.Store({
     },
     SET_FETCHING(state) {
       state.isFetching = !state.isFetching
+    },
+    SET_SEARCH(state, value) {
+      state.searchCatalog = value
+    },
+    CLEAR_VISIBLE_PRODUCTS(state) {
+      state.visibleProducts = []
+    },
+    RELOAD_PAGE(state) {
+      state.visibleProducts = state.products
+      state.searchCatalog = ''
     }
   },
   actions: {
@@ -63,6 +85,18 @@ export default new Vuex.Store({
     },
     deleteToCart({commit}, product) {
       commit('DELETE_TO_CART', product)
+    },
+    setSearch({commit}, value) {
+      commit('SET_SEARCH', value)
+    },
+    addVisibaleProducts({commit}, product) {
+      commit('ADD_VISIBALE_PRODUCTS', product)
+    },
+    clearVisibalProducts({commit}) {
+      commit('CLEAR_VISIBLE_PRODUCTS')
+    },
+    reloadPage({commit}) {
+      commit('RELOAD_PAGE')
     }
   },
   modules: {

@@ -116,7 +116,7 @@ export default {
   left: 0;
   justify-content: flex-end;
   padding: 20px 20px 20px 0;
-  z-index: 999;
+  z-index: 10;
   margin-bottom: 40px;
   background-color: #ccf1f1;
 }
@@ -187,5 +187,9 @@ margin: 100px 0 40px;
 
 .cart-store_content {
   margin: 100px 0 40px;
+}
+
+.cart-store_modal {
+  z-index: 999;
 }
 </style>
