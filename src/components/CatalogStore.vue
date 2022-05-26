@@ -138,10 +138,8 @@ export default {
       this.deleteNotification(product);
     },
     deleteNotification() {
-      const vm = this;
-
       setTimeout(() => {
-        vm.messages.shift();
+        this.messages.shift();
       }, 3000);
     },
   },
