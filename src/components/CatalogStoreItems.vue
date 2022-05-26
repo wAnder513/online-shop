@@ -46,6 +46,7 @@ export default {
     ]),
     addToCartStore () {
       this.addToCart(this.product)
+      this.$emit('create-notification', this.product)
     },
     removeToCartStore () {
       this.deleteToCart(this.product)

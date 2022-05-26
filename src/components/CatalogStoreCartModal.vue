@@ -3,16 +3,15 @@
     <div class="modal_container">
       <div class="modal_header">
         <div class="modal_title">{{ modalTitle }}</div>
-        <div class="material-icons modal-close" @click="closeModal">
-          close
-        </div>
+        <div class="material-icons modal-close" @click="closeModal">close</div>
       </div>
 
       <slot></slot>
 
       <div class="modal_footer">
         <button class="modal_close" @click="closeModal">Close</button>
-        <button class="modal_submit">
+
+        <button class="modal_submit" @click="getOrderConfirmed">
           {{ rightBtnTitle }}
         </button>
       </div>
@@ -21,38 +20,49 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
-  name: 'CatalogStoreCartModal',
+  name: "CatalogStoreCartModal",
   props: {
     modalTitle: {
       type: String,
-      default: ''
+      default: "",
     },
     rightBtnTitle: {
       type: String,
-      default: 'Ok'
-    }
+      default: "Ok",
+    },
   },
-  data () {
-    return {}
+  data() {
+    return {
+      orderConfirmed: false,
+    };
   },
   methods: {
-    rightBtnAction () {
-      this.$emit('right-btn-action')
+    ...mapActions([
+      'deleteAllProductToCart',
+    ]),
+    rightBtnAction() {
+      this.$emit("right-btn-action");
     },
-    closeModal () {
-      this.$emit('close-modal')
-    }
+    closeModal() {
+      this.$emit("close-modal");
+    },
+    getOrderConfirmed() {
+      this.deleteAllProductToCart()
+      this.$emit("get-confirmed-order");
+      this.closeModal();
+    },
   },
-  mounted () {
-    let vm = this
-    document.addEventListener('click', function (item) {
-      if (item.target === vm.$refs['modal']) {
-        vm.closeModal()
+  mounted() {
+    document.addEventListener("click", (item) => {
+      if (item.target === this.$refs["modal"]) {
+        this.closeModal();
       }
-    })
-  }
-}
+    });
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -103,6 +113,7 @@ export default {
   padding: 10px;
   color: #ffffff;
   border: none;
+  border-radius: 5px;
 }
 
 .modal_submit {

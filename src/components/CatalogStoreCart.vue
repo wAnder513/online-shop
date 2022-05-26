@@ -6,6 +6,10 @@
       </router-link>
     </div>
 
+    <order-confirmed v-if="isOrderConfirmed"
+                     @close-alert="closeAlert">
+    </order-confirmed>
+
     <div class="cart-store_content">
       <div v-if="hasItemsCart" class="cart-store_cards">
         <catalog-store-cart-items
@@ -22,6 +26,7 @@
           :modal-title="modalTitle"
           :right-btn-title="rightBtnTitle"
           @close-modal="closeModalSubmit"
+          @get-confirmed-order="getConfirmedOrder"
         >
           <div
             class="modal-content_container"
@@ -61,13 +66,19 @@
 import {mapGetters} from 'vuex'
 import CatalogStoreCartItems from './CatalogStoreCartItems.vue'
 import CatalogStoreCartModal from './CatalogStoreCartModal.vue'
+import OrderConfirmed from './alert/OrderConfirmed.vue'
 
 export default {
-  components: { CatalogStoreCartItems, CatalogStoreCartModal },
+  components: { 
+    CatalogStoreCartItems,
+    CatalogStoreCartModal,
+    OrderConfirmed 
+  },
   name: 'CatalogStoreCart',
   data () {
     return {
-      isModalSubmit: false
+      isModalSubmit: false,
+      isOrderConfirmed: false,
     }
   },
   computed: {
@@ -102,6 +113,19 @@ export default {
     },
     closeModalSubmit () {
       this.isModalSubmit = false
+    },
+    getConfirmedOrder() {
+      this.isOrderConfirmed = true
+
+      this.setTimeoutalertConfirmedOrder() 
+    },
+    setTimeoutalertConfirmedOrder() {
+      setTimeout(() => {
+        this.isOrderConfirmed = false
+      }, 3000)
+    },
+    closeAlert() {
+       this.isOrderConfirmed = false
     }
   }
 }
@@ -151,6 +175,7 @@ margin: 100px 0 40px;
   color: #ffffff;
   background-color: rgb(7, 234, 7);
   border: none;
+  border-radius: 5px;
 
   &:hover {
     background-color: rgb(7, 169, 7);

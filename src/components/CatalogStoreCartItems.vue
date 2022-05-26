@@ -19,10 +19,16 @@
         <div>Price: {{ productsPrice }} rub.</div>
       </div>
     </div>
+
+    <i class="material-icons icon" @click="deleteProduct">
+      delete
+    </i>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   components: {},
   props: {
@@ -31,6 +37,14 @@ export default {
   computed: {
     productsPrice() {
       return this.product.price * this.product.quantity  
+    }
+  },
+  methods: {
+    ...mapActions([
+      'deleteAllProductsOneCategory',
+    ]), 
+    deleteProduct() {
+      this.deleteAllProductsOneCategory(this.product);
     }
   }
 }
@@ -73,5 +87,9 @@ export default {
   display: flex;
   flex-direction: column;
   text-align: center;
+}
+
+.icon {
+  cursor: pointer;
 }
 </style>
